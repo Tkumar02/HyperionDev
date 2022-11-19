@@ -178,11 +178,13 @@ def reg_user():
     # check whether username is already in user.txt
     with open('user.txt', 'r+') as f:
         users = f.readlines()
+        user_names = []
         for user in users:
             names = user.split(';')
-            while names[0] == new_username:
-                new_username = input(
-                    'That username is already taken, please enter another username: ')
+            user_names.append(names[0])
+        while new_username in user_names:
+            new_username = input(
+                'That username is already taken, please enter another username: ')
 
     # get new password from user
     new_password = input('New password: ')
@@ -206,6 +208,8 @@ def reg_user():
     # Otherwise you present a relevant message.
     else:
         print("Passwords do no match")
+
+######################################a Adding Tasks ############################################
 
 
 def add_task():
@@ -274,9 +278,8 @@ def view_all():
         print(t.display())
         print("-----------------------------------")
 
-# editing tasks
 
-
+##############################editing tasks###################################
 def edit_task(number):
     # select what to edit
     edit = input(
@@ -325,6 +328,8 @@ def edit_task(number):
         print('Unknown command')
         return
 
+################################### VIEW TASKS #####################################################
+
 
 def view_mine():
     print("-----------------------------------")
@@ -364,11 +369,41 @@ def view_mine():
         print('Incorrect selection')
         return
 
+######################### GENERATE REPORT ###################################
+
+
+def generate_report():
+    with open('task_overview.txt', 'w+') as f:
+        total_tasks = len(task_list)
+        completed_tasks = []
+        uncompleted_tasks = []
+        overdue_tasks = []
+        for task in task_list:
+            print(task)
+            if task.completed:
+                completed_tasks.append(task.title)
+            else:
+                uncompleted_tasks.append(task.title)
+                if task.due_date < datetime.today():
+                    overdue_tasks.append(task.title)
+        per_uncomplete = round(
+            (len(uncompleted_tasks) / len(task_list) * 100), 2)
+        per_overdue = round(
+            (len(overdue_tasks) / len(task_list) * 100), 2)
+        f.write(f'completed_tasks:\t {len(completed_tasks)}\n')
+        f.write(f'uncompleted_tasks:\t {len(uncompleted_tasks)}\n')
+        f.write(f'overdue_tasks:\t\t {len(overdue_tasks)}\n')
+        f.write(f'percentage of uncompleted tasks: {per_uncomplete}%\n')
+        f.write(f'percentage of overdue tasks:\t {per_overdue}%\n')
+
+    # with open('user_overview.txt','w+') as file:
+    #     for task in task_list:
+    #         task.username
+
 
 ####################
 # End of functions
 ####################
-
 while True:
     # Get input from user
     print()
@@ -378,6 +413,7 @@ while True:
     a - Adding a task
     va - View all tasks
     vm - view my task
+    gr - generate reports
     ds - display statistics
     e - Exit
     : ''').lower()
@@ -410,6 +446,9 @@ while True:
         print(f"Number of users: \t\t {num_users}")
         print(f"Number of tasks: \t\t {num_tasks}")
         print("-----------------------------------")
+
+    elif menu == 'gr':
+        generate_report()
 
     elif menu == 'e':  # Exit program
         print('Goodbye!!!')

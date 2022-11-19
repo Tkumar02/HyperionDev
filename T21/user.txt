@@ -1,0 +1,6 @@
+admin;password
+apple;pie
+puppy;dog
+tim;tech
+max;max
+bean;stalk
