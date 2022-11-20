@@ -1,5 +1,5 @@
-completed_tasks:	 1
-uncompleted_tasks:	 2
-overdue_tasks:		 1
+completed_tasks:	 3
+uncompleted_tasks:	 6
+overdue_tasks:		 2
 percentage of uncompleted tasks: 66.67%
-percentage of overdue tasks:	 33.33%
+percentage of overdue tasks:	 22.22%

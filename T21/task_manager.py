@@ -373,13 +373,13 @@ def view_mine():
 
 
 def generate_report():
+    #TASKS OVERVIEW
     with open('task_overview.txt', 'w+') as f:
         total_tasks = len(task_list)
         completed_tasks = []
         uncompleted_tasks = []
         overdue_tasks = []
         for task in task_list:
-            print(task)
             if task.completed:
                 completed_tasks.append(task.title)
             else:
@@ -390,15 +390,61 @@ def generate_report():
             (len(uncompleted_tasks) / len(task_list) * 100), 2)
         per_overdue = round(
             (len(overdue_tasks) / len(task_list) * 100), 2)
-        f.write(f'completed_tasks:\t {len(completed_tasks)}\n')
-        f.write(f'uncompleted_tasks:\t {len(uncompleted_tasks)}\n')
-        f.write(f'overdue_tasks:\t\t {len(overdue_tasks)}\n')
-        f.write(f'percentage of uncompleted tasks: {per_uncomplete}%\n')
-        f.write(f'percentage of overdue tasks:\t {per_overdue}%\n')
+        f.write(f'Total completed tasks:\t {len(completed_tasks)}\n')
+        f.write(f'Total uncompleted tasks:\t {len(uncompleted_tasks)}\n')
+        f.write(f'Total overdue_tasks:\t\t {len(overdue_tasks)}\n')
+        f.write(f'Percentage of all uncompleted tasks: {per_uncomplete}%\n')
+        f.write(f'Percentage of all overdue tasks:\t {per_overdue}%\n')
 
-    # with open('user_overview.txt','w+') as file:
-    #     for task in task_list:
-    #         task.username
+    #USERS OVERVIEW
+    with open('user_overview.txt','w+') as file:
+        #finding out the percentage of tasks assigned to each user
+        count = 0
+        tasks_user = []
+        user_count = {}
+        total_tasks = len(task_list)
+        for task in task_list:
+            tasks_user.append(task.username)
+        for user in tasks_user:
+            user_count[user] = tasks_user.count(user)
+
+        for user,count in user_count.items():
+            percent_tasks = round((count/total_tasks*100),1)
+            file.write(f'{user} has {count} task(s), and has {percent_tasks}% of all tasks assigned to them\n')
+        
+        #store names in completed tasks to calculate how many completed tasks per user
+        tasks_completed = []
+        total_uncompleted_dict = {}
+        for task in task_list:
+            name = task.username
+            if name == task.username and task.completed:
+                tasks_completed.append(task.username)
+            total_tasks = tasks_user.count(name)
+            completed_tasks = tasks_completed.count(name)
+            percentage_completed = round((completed_tasks/total_tasks *100),1)
+            percentage_uncompleted = 100-percentage_completed
+            total_uncompleted_dict[name] = percentage_uncompleted
+
+        for user,tasks in total_uncompleted_dict.items():
+            file.write(f'{user} has to complete {tasks}% of all tasks\n')
+
+
+        #finding which users have overdue tasks and counting these
+        overdue_tasks = []
+        overdue_dict = {}
+        for task in task_list:
+            if not task.completed:
+                if task.due_date<datetime.today():
+                    overdue_tasks.append(task.username)
+        for name in overdue_tasks:
+            percentage_overdue = round((overdue_tasks.count(name)/total_tasks*100),1)
+            overdue_dict[name] = percentage_overdue
+        
+        for user,tasks in overdue_dict.items():
+            file.write(f'{user} has {tasks}% of overdue and uncompleted tasks\n')
+            if not overdue_dict:
+                file.write('No one has overdue uncompleted tasks\n')
+
 
 
 ####################
@@ -441,11 +487,19 @@ while True:
     elif menu == 'ds' and curr_user == 'admin':  # If admin, display statistics
         num_users = len(username_password.keys())
         num_tasks = len(task_list)
+        generate_report()
+        with open('user_overview.txt','r') as f:
+            users_overview = f.read()
+        with open('task_overview.txt','r') as f1:
+            tasks_overview = f1.read()
 
         print("-----------------------------------")
         print(f"Number of users: \t\t {num_users}")
         print(f"Number of tasks: \t\t {num_tasks}")
         print("-----------------------------------")
+        print(users_overview)
+        print("-----------------------------------")
+        print(tasks_overview)
 
     elif menu == 'gr':
         generate_report()
